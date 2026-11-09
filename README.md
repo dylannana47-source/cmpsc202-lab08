@@ -15,13 +15,13 @@ BFS is excellent for finding the shortest path in an unweighted graph. Let's see
 
 **Questions:**
 1. If you run a standard BFS starting at Node $A$, looking for Node $D$, which path will the BFS algorithm discover first? Why?
-   > *Your answer here*
+   > BFS finds the direct path $A \rightarrow D$ first because it uses the fewest edges (one), regardless of their weights.
 
 2. What is the total weight of the path BFS found? What is the total weight of the alternative path? 
-   > *Your answer here*
+   > The path $A \rightarrow D$ has weight $100$. The alternative path $A \rightarrow B \rightarrow C \rightarrow D$ has weight $2 + 3 + 4 = 9$.
 
 3. How does the definition of "shortest path" change when moving from unweighted graphs to weighted graphs?
-   > *Your answer here*
+   > In an unweighted graph, a shortest path uses the fewest edges. In a weighted graph, it has the lowest sum of edge weights, which may involve more edges.
 
 ---
 
@@ -40,15 +40,15 @@ Starting at Node $A$, trace Dijkstra's algorithm. Fill in the tracker table belo
 
 | Step | Current Node | Neighbors to Check | `dist` Map | `visited` Set | 
 | :--- | :--- | :--- | :--- | :--- | 
-| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2 | { } | 
-| 1 | | | | | 
-| 2 | | | | | 
-| 3 | | | | | 
-| 4 | | | | | 
+| 0 | $A$ | $B$, $C$ | $A$:0, $B$:4, $C$:2 | { } |
+| 1 | $C$ | $B$, $D$, $E$ | $A$:0, $B$:3, $C$:2, $D$:10, $E$:12 | {$A$} |
+| 2 | $B$ | $A$, $C$, $D$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:12 | {$A$, $C$} |
+| 3 | $D$ | $B$, $C$, $E$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:10 | {$A$, $C$, $B$} |
+| 4 | $E$ | $C$, $D$ | $A$:0, $B$:3, $C$:2, $D$:8, $E$:10 | {$A$, $C$, $B$, $D$} |
 
 **Conceptual Question:**
 When we add a vertex to the "visited" set, why are we 100% certain we have found the absolute shortest path to that node? 
-> *Your answer here*
+> Assuming all edge weights are nonnegative, the unvisited vertex with the smallest tentative distance cannot be made cheaper through another unvisited vertex: reaching that other vertex already costs at least as much, and extending a path cannot reduce its cost. So its tentative distance is final. This guarantee does not hold with negative edge weights.
 
 ---
 
@@ -62,16 +62,16 @@ Dijkstra's algorithm relies on an assumption about the weights. Let's see what h
 Trace Dijkstra's algorithm starting from Node $A$ to find the shortest path to Node $C$.
 
 1. Which node does Dijkstra's algorithm visit first after $A$?
-   > *Your answer here*
+   > It visits $B$, whose tentative distance is $2$, before $C$, whose tentative distance is $5$.
 
 2. What will Dijkstra's algorithm declare as the shortest path to $C$, and what is its weight?
-   > *Your answer here*
+   > Relaxing the edge from $B$ to $C$ gives $2 + (-4) = -2$, so it declares $A \rightarrow B \rightarrow C$ with weight $-2$.
 
 3. Look at the graph manually. What is the *actual* shortest path from $A$ to $C$, and what is its total weight? 
-   > *Your answer here*
+   > As drawn, the graph has no arrows, so its edges are normally understood to be undirected. Traversing the negative edge between $B$ and $C$ back and forth gives a negative-cost cycle, so there is no finite actual shortest path. If the edge was intended to be directed from $B$ to $C$, the shortest path to $C$ is $A \rightarrow B \rightarrow C$, with weight $-2$.
 
 4. **The Trap:** Explain exactly *why* Dijkstra's algorithm failed to find the correct shortest path in this scenario.
-   > *Your answer here*
+   > This particular graph does not demonstrate the claimed failure for the requested destination: Dijkstra relaxes $C$ from $5$ to $-2$ when it processes $B$, before $C$ is finalized. If the graph is undirected, the negative cycle means no shortest path exists at all; Dijkstra's nonnegative-weight guarantee is invalid, and its finalized distances cannot be trusted. If a failure example was intended, the graph or edge directions need to be changed.
 
 ---
 
@@ -95,8 +95,8 @@ Standard Dijkstra's algorithm only understands *edges* and *edge weights*. It do
 
 1. How should you represent the paths with stairs in your graph so the algorithm never tries to use them?
 
-   > *Your answer here*
+   > Omit stair paths from the graph (or equivalently, do not add edges for them), so they cannot be included in any route.
 
 2. How can you account for the $3$-minute waiting time at busy crosswalk intersections using *only* edge weights? (Hint: Think about how you could modify the weights of edges connecting to that intersection).
 
-   > *Your answer here*
+   > Add 3 minutes to each outgoing edge from a busy intersection. Since the wait happens before leaving the intersection, represent sidewalk connections as directed edges with a weight of 2 minutes plus 3 when the edge leaves a busy intersection. This charges the wait when the robot actually departs that intersection.
